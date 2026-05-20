@@ -1,0 +1,480 @@
+.profile-page {
+    width: 100%;
+    overflow-x: hidden;
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+}
+
+.profile-back-btn {
+    position: absolute;
+    top: 2rem;
+    left: 2rem;
+    z-index: 100;
+    color: white;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s ease;
+}
+
+.profile-back-btn:hover {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+/* Split Layout akin to Hero Section */
+.profile-split-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.profile-split-left {
+    flex: 1;
+    position: relative;
+    background-color: var(--primary);
+    overflow: hidden;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+}
+
+.profile-main-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+}
+
+.profile-stats-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+    padding: 3rem 2rem 2rem 2rem;
+    display: flex;
+    gap: 2rem;
+    color: white;
+}
+
+.overlay-stat {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.2rem;
+    font-weight: 800;
+}
+
+.profile-split-right {
+    flex: 1;
+    background-color: var(--bg-color);
+    overflow-y: auto;
+}
+
+.profile-details-scroll {
+    padding: 4rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Typography & Details Header */
+.pd-header {
+    margin-bottom: 2rem;
+}
+
+.pd-name {
+    font-family: 'Inter', sans-serif;
+    font-weight: 900;
+    font-size: 4rem;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.pd-age {
+    color: #666;
+    font-weight: 800;
+}
+
+.vip-icon {
+    margin-left: -0.5rem;
+}
+
+.pd-meta {
+    display: flex;
+    gap: 1.5rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #444;
+}
+
+.pd-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.text-yellow-500 {
+    color: #f59e0b;
+}
+
+.pd-bio {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    color: #333;
+    margin-bottom: 2rem;
+}
+
+.profile-full-width-section {
+    padding: 4rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    background-color: var(--bg-color);
+}
+
+.pd-stats-row {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.pd-stat-box {
+    background-color: #f5f5f5;
+    padding: 1rem 1.5rem;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 100px;
+}
+
+.pd-stat-box span {
+    font-size: 0.9rem;
+    color: #888;
+    text-transform: uppercase;
+    font-weight: 800;
+    margin-bottom: 0.3rem;
+}
+
+.pd-stat-box strong {
+    font-size: 1.3rem;
+    font-weight: 900;
+}
+
+.pd-section-title {
+    font-size: 1.5rem;
+    font-weight: 900;
+    margin-bottom: 1rem;
+}
+
+/* Services Grid */
+.pd-services-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 4rem;
+}
+
+.service-card {
+    border: 2px solid var(--text-primary);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    cursor: pointer;
+    transition: transform 0.2s;
+    border-radius: 4px;
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+}
+
+.sc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.sc-title-block h4 {
+    font-size: 1.2rem;
+    font-weight: 900;
+    margin-bottom: 0.5rem;
+}
+
+.sc-price {
+    font-size: 2.2rem;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.sc-price span {
+    font-size: 0.9rem;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.sc-icon {
+    color: #e5e5e5;
+}
+
+.service-card hr {
+    margin: 1.5rem 0 1rem 0;
+    border: none;
+    border-top: 2px solid var(--text-primary);
+}
+
+.sc-desc {
+    font-size: 0.95rem;
+    line-height: 1.4;
+    color: #333;
+    flex-grow: 1;
+    margin-bottom: 1.5rem;
+}
+
+.sc-btn {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    background-color: transparent;
+    border: 2px solid var(--text-primary);
+    color: var(--text-primary);
+    font-weight: 800;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-radius: 0;
+}
+
+.sc-btn:hover {
+    background-color: var(--text-primary);
+    color: var(--text-secondary);
+}
+
+/* Subscriptions & Actions */
+.pd-actions {
+    background-color: #f9f9f9;
+    padding: 2rem;
+    border-radius: 20px;
+    border: 2px solid #eee;
+    margin-bottom: 3rem;
+}
+
+.pd-btn-subscribe {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    background-color: var(--primary);
+    color: var(--text-secondary);
+    border: none;
+    padding: 1.2rem 2rem;
+    border-radius: 40px;
+    cursor: pointer;
+    margin-bottom: 1rem;
+    transition: transform 0.2s;
+}
+
+.pd-btn-subscribe:hover {
+    transform: scale(1.02);
+}
+
+.sub-price {
+    font-size: 1.8rem;
+    font-weight: 900;
+    margin-right: 0.5rem;
+}
+
+.sub-text {
+    font-size: 1.2rem;
+    font-weight: 600;
+    opacity: 0.9;
+}
+
+.pd-btn-row {
+    display: flex;
+    gap: 1rem;
+}
+
+.pd-btn-secondary {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background-color: var(--text-primary);
+    color: var(--text-secondary);
+    border: 2px solid var(--text-primary);
+    padding: 1rem;
+    border-radius: 30px;
+    font-weight: 800;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.pd-btn-secondary.outline {
+    background-color: transparent;
+    color: var(--text-primary);
+}
+
+.pd-btn-secondary:hover {
+    transform: scale(1.02);
+    background-color: var(--text-primary);
+    color: var(--text-secondary);
+}
+
+/* Full Width Media Section */
+.profile-media-section {
+    width: 100%;
+    background-color: var(--bg-color);
+    padding: 2rem 4rem 6rem 4rem;
+}
+
+.pm-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.pd-media-tabs {
+    display: flex;
+    border-bottom: 2px solid #eee;
+    margin-bottom: 3rem;
+    gap: 3rem;
+}
+
+.pd-media-tabs .tab {
+    padding: 1rem 0;
+    font-weight: 800;
+    font-size: 1.4rem;
+    color: #888;
+    cursor: pointer;
+    position: relative;
+    border: none;
+    background: transparent;
+}
+
+.pd-media-tabs .tab.active {
+    color: var(--text-primary);
+}
+
+.pd-media-tabs .tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background-color: var(--text-primary);
+    border-radius: 2px 2px 0 0;
+}
+
+/* Fake Media Grid */
+.pm-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.pm-img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.pm-locked-item {
+    width: 100%;
+    aspect-ratio: 1;
+    background-color: #f5f5f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 12px;
+    border: 3px dashed #e0e0e0;
+}
+
+.pd-locked-media {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 6rem 2rem;
+    background-color: #fafafa;
+    border-radius: 20px;
+    border: 3px dashed #e5e5e5;
+    text-align: center;
+    color: #999;
+}
+
+.pd-locked-media p {
+    margin-top: 1rem;
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #666;
+}
+
+/* Mobile responsive */
+@media (max-width: 1024px) {
+    .pd-services-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .pm-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.8rem;
+    }
+
+    .profile-split-layout {
+        flex-direction: column;
+        min-height: auto;
+    }
+
+    .profile-split-left {
+        height: 60vh;
+        position: relative;
+    }
+
+    .profile-details-scroll {
+        padding: 1.5rem 1.5rem 0 1.5rem;
+    }
+
+    .pd-name {
+        font-size: 3rem;
+    }
+
+    .pd-btn-row {
+        flex-direction: column;
+    }
+
+    .pd-actions {
+        margin-bottom: 1.5rem;
+        padding: 1.5rem;
+    }
+
+    .profile-full-width-section {
+        padding: 2rem 1.5rem 4rem 1.5rem;
+    }
+
+    .profile-back-btn {
+        top: 1rem;
+        left: 1rem;
+        background: transparent;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .profile-media-section {
+        padding: 2rem;
+    }
+}
