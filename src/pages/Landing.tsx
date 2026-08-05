@@ -1,12 +1,19 @@
-import { useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { useRef, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Play, Eye, MousePointer2, ChevronRight, ChevronLeft } from 'lucide-react';
 import { useAppStore } from '../store';
 import './Landing.css';
 
 const Landing = () => {
     const scrollContainer = useRef<HTMLDivElement>(null);
-    const { creators } = useAppStore();
+    const navigate = useNavigate();
+    const { creators, currentClientId, loginClient, registerClient, logoutClient } = useAppStore();
+
+    const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+    const [isRegisteringClient, setIsRegisteringClient] = useState(false);
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [name, setName] = useState('');
 
     const scroll = (direction: 'left' | 'right') => {
         if (scrollContainer.current) {
@@ -40,8 +47,17 @@ const Landing = () => {
                         <div className="play-icon">
                             <Play size={40} fill="black" />
                         </div>
-                        <a href="#member" className="btn btn-solid">Member Access</a>
-                        <Link to="/backoffice" className="btn btn-solid">Become a Creator</Link>
+                        {currentClientId && currentClientId !== 'client-guest' ? (
+                            <>
+                                <Link to="/client" className="btn btn-solid">My Profile</Link>
+                                <button onClick={logoutClient} className="btn btn-solid" style={{ background: '#ef4444', borderColor: '#ef4444', color: '#fff', cursor: 'pointer' }}>Logout</button>
+                            </>
+                        ) : (
+                            <>
+                                <button onClick={() => setIsLoginModalOpen(true)} className="btn btn-solid" style={{ cursor: 'pointer' }}>Member Access</button>
+                                <Link to="/backoffice" className="btn btn-solid">Become a Creator</Link>
+                            </>
+                        )}
                     </div>
                 </div>
             </section>
@@ -108,7 +124,17 @@ const Landing = () => {
             {/* CTA SPLIT SECTION */}
             <section className="cta-section" id="member">
                 <div className="cta-images-row">
-                    <div className="cta-left">
+                    <div 
+                        className="cta-left" 
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => {
+                            if (currentClientId && currentClientId !== 'client-guest') {
+                                navigate('/client');
+                            } else {
+                                setIsLoginModalOpen(true);
+                            }
+                        }}
+                    >
                         <img src="/male_member.png" alt="Member" className="cta-img" />
                         <div className="cta-left-mask"></div>
                         <MousePointer2 size={120} color="black" strokeWidth={2.5} className="cta-cursor" />
@@ -117,7 +143,12 @@ const Landing = () => {
                     <div className="cta-right">
                         <img src="/female_creator.png" alt="Creator" className="cta-img" />
                         <div className="cta-right-content">
-                            <button className="register-black-btn">Register</button>
+                            <button 
+                                className="register-black-btn"
+                                onClick={() => navigate('/backoffice')}
+                            >
+                                Register
+                            </button>
                             <div className="creator-heading">
                                 BECOME<br />
                                 <div className="creator-sub"><span className="creator-sub-a">a</span> Creator</div>
@@ -129,11 +160,89 @@ const Landing = () => {
                         </div>
                     </div>
                 </div>
-                <div className="cta-bottom-row">
+                <div 
+                    className="cta-bottom-row"
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => {
+                        if (currentClientId && currentClientId !== 'client-guest') {
+                            navigate('/client');
+                        } else {
+                            setIsLoginModalOpen(true);
+                        }
+                    }}
+                >
                     <div className="cta-bottom-left">MEMBER</div>
                     <div className="cta-bottom-right"><span className="cta-bottom-right-text">ACCESS</span></div>
                 </div>
             </section>
+
+            {/* Client Login Modal */}
+            {isLoginModalOpen && (
+                <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div style={{ background: '#fff', padding: '2rem', borderRadius: '12px', width: '90%', maxWidth: '400px', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                            <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#000' }}>{isRegisteringClient ? 'Create Client Account' : 'Client Login'}</h2>
+                            <button onClick={() => setIsLoginModalOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem', color: '#000' }}>&times;</button>
+                        </div>
+                        <p style={{ color: '#666', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
+                            {isRegisteringClient ? 'Please fill in your details to create an account.' : 'Enter your email and password to access premium features.'}
+                        </p>
+                        <form onSubmit={(e) => {
+                            e.preventDefault();
+                            if (isRegisteringClient) {
+                                if (name && email && password) {
+                                    registerClient({ name, email, password });
+                                    setIsLoginModalOpen(false);
+                                    navigate('/client');
+                                }
+                            } else {
+                                if (email && password) {
+                                    loginClient(email, password);
+                                    setIsLoginModalOpen(false);
+                                    navigate('/client');
+                                }
+                            }
+                        }}>
+                            {isRegisteringClient && (
+                                <input
+                                    type="text"
+                                    placeholder="Full Name"
+                                    value={name}
+                                    onChange={e => setName(e.target.value)}
+                                    style={{ width: '100%', padding: '0.8rem', marginBottom: '1rem', border: '1px solid #ccc', borderRadius: '8px', boxSizing: 'border-box', color: '#000' }}
+                                    required
+                                />
+                            )}
+                            <input
+                                type="email"
+                                placeholder="Email Address"
+                                value={email}
+                                onChange={e => setEmail(e.target.value)}
+                                style={{ width: '100%', padding: '0.8rem', marginBottom: '1rem', border: '1px solid #ccc', borderRadius: '8px', boxSizing: 'border-box', color: '#000' }}
+                                required
+                            />
+                            <input
+                                type="password"
+                                placeholder="Password"
+                                value={password}
+                                onChange={e => setPassword(e.target.value)}
+                                style={{ width: '100%', padding: '0.8rem', marginBottom: '1.5rem', border: '1px solid #ccc', borderRadius: '8px', boxSizing: 'border-box', color: '#000' }}
+                                required
+                            />
+                            <button type="submit" style={{ width: '100%', padding: '1rem', background: '#000', color: '#fff', border: 'none', borderRadius: '30px', fontWeight: 'bold', cursor: 'pointer' }}>
+                                {isRegisteringClient ? 'Register' : 'Secure Login'}
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setIsRegisteringClient(!isRegisteringClient)}
+                                style={{ width: '100%', marginTop: '1rem', background: 'none', border: 'none', color: '#666', cursor: 'pointer', textDecoration: 'underline' }}
+                            >
+                                {isRegisteringClient ? 'Already have an account? Login' : 'Need an account? Register'}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            )}
 
         </div>
     );
