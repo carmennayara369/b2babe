@@ -155,7 +155,7 @@ const ClientProfile = () => {
                                 <Lock size={24} /> Recharge Wallet
                             </h2>
                             <p style={{ color: '#aaa', marginBottom: '2rem', fontSize: '0.9rem' }}>
-                                Add funds securely to unlock private media, chat, and book meetings. Current balance: <strong>€{client?.balance || 0}</strong>
+                                Add funds securely to unlock private media, and chat. Current balance: <strong>€{client?.balance || 0}</strong>
                             </p>
 
                             {isProcessing ? (

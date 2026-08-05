@@ -35,7 +35,7 @@ const Backoffice = () => {
     const [editLocation, setEditLocation] = useState('');
     const [editImageUrl, setEditImageUrl] = useState('');
     const [editServices, setEditServices] = useState(currentCreator?.services || {
-        meet: { enabled: true, price: 150 },
+        meet: { enabled: false, price: null },
         pic: { enabled: false, price: null },
         video: { enabled: false, price: null },
         chat: { enabled: true, price: 10 }
@@ -273,7 +273,7 @@ const Backoffice = () => {
                             <h3>Offered Services</h3>
                             <p style={{ color: '#888', fontSize: '0.9rem', marginBottom: '1rem' }}>Toggle the services you offer and set a custom price. Leave price blank to show "Price on request".</p>
                             <div style={{ display: 'grid', gap: '1rem' }}>
-                                {['meet', 'pic', 'video', 'chat'].map(key => {
+                                {['pic', 'video', 'chat'].map(key => {
                                     const sKey = key as keyof typeof editServices;
                                     const service = editServices[sKey];
                                     return (
@@ -320,7 +320,7 @@ const Backoffice = () => {
                                 <textarea
                                     className="admin-textarea"
                                     rows={4}
-                                    placeholder="Never say yes to meetups under 300€. Always redirect them to buy private pics..."
+                                    placeholder="Always redirect them to buy private pics or chat..."
                                     value={editAIPersona.customInstructions}
                                     onChange={e => setEditAIPersona({ ...editAIPersona, customInstructions: e.target.value })}
                                 ></textarea>

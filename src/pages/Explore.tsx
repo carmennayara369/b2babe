@@ -25,7 +25,7 @@ const Explore = () => {
                 <Link to="/" className="b2-logo" style={{ textDecoration: 'none' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', width: '120px' }}>
                         <img src="/logo-white.png" alt="B2Babe Logo" style={{ width: '100%', height: 'auto', filter: 'invert(1)' }} />
-                        <div className="b2-logo-subtitle text-black" style={{ width: '100%', textAlign: 'center', marginTop: '0.2rem', fontSize: '0.7rem', textDecoration: 'none' }}>MEET-PIC-VIDEO-CHAT</div>
+                        <div className="b2-logo-subtitle text-black" style={{ width: '100%', textAlign: 'center', marginTop: '0.2rem', fontSize: '0.7rem', textDecoration: 'none' }}>PHOTOS-VIDEOS-CHAT</div>
                     </div>
                 </Link>
                 <div className="header-actions">
@@ -52,7 +52,7 @@ const Explore = () => {
                         <Eye size={36} strokeWidth={3} />
                         <h1>Xplor</h1>
                     </div>
-                    <p className="explore-subtitle">Discover premium creators in your city offering Meet, Pic, Video, and Chat services.</p>
+                    <p className="explore-subtitle">Discover premium creators offering private photos, custom videos, and direct chat.</p>
                 </div>
 
                 {/* Filters Row */}
@@ -83,7 +83,6 @@ const Explore = () => {
                             <div className="profile-info">
                                 <h3 className="profile-name" style={{ color: 'white' }}>{profile.name}</h3>
                                 <div className="profile-tags-container">
-                                    <span className={profile.services?.meet?.enabled ? 'service-active' : 'service-inactive'}>MEET</span>
                                     <span className={profile.services?.pic?.enabled ? 'service-active' : 'service-inactive'}>PIC</span>
                                     <span className={profile.services?.video?.enabled ? 'service-active' : 'service-inactive'}>VIDEO</span>
                                     <span className={profile.services?.chat?.enabled ? 'service-active' : 'service-inactive'}>CHAT</span>

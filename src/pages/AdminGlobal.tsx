@@ -622,10 +622,10 @@ const AdminGlobal = () => {
                             <div style={{ marginBottom: '1rem', borderTop: '1px solid #444', paddingTop: '1rem' }}>
                                 <label style={{ display: 'block', marginBottom: '0.5rem', color: '#aaa', fontSize: '0.9rem' }}>Offered Services & Pricing</label>
                                 <div style={{ display: 'grid', gap: '0.5rem' }}>
-                                    {['meet', 'pic', 'video', 'chat'].map(key => {
+                                    {['pic', 'video', 'chat'].map(key => {
                                         const sKey = key as keyof NonNullable<CreatorProfile['services']>;
                                         // safely handle missing services gracefully
-                                        const defaultServices = { meet: { enabled: true, price: 150 }, pic: { enabled: false, price: null }, video: { enabled: false, price: null }, chat: { enabled: true, price: 10 } };
+                                        const defaultServices = { meet: { enabled: false, price: null }, pic: { enabled: false, price: null }, video: { enabled: false, price: null }, chat: { enabled: true, price: 10 } };
                                         const safeServices = formData.services || defaultServices;
                                         const service = safeServices[sKey] || defaultServices[sKey];
 

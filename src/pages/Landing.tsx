@@ -25,14 +25,13 @@ const Landing = () => {
                     <div className="hero-brand">
                         <div style={{ display: 'flex', flexDirection: 'column', width: '200px' }}>
                             <img src="/logo-white.png" alt="B2Babe Logo" style={{ width: '100%', height: 'auto' }} />
-                            <div className="b2-logo-subtitle" style={{ color: '#fff', textShadow: 'none', width: '100%', textAlign: 'center', marginTop: '0.5rem' }}>MEET-PIC-VIDEO-CHAT</div>
+                            <div className="b2-logo-subtitle" style={{ color: '#fff', textShadow: 'none', width: '100%', textAlign: 'center', marginTop: '0.5rem' }}>PHOTOS-VIDEOS-CHAT</div>
                         </div>
                     </div>
                 </div>
 
                 <div className="hero-right">
                     <h1 className="hero-title">
-                        <span className="hover-word">Meet</span><br />
                         <span className="hover-word">Pic</span><br />
                         <span className="hover-word">Video</span><br />
                         <span className="hover-word">Chat</span>
@@ -68,7 +67,7 @@ const Landing = () => {
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', width: '200px' }}>
                             <img src="/logo.png" alt="B2Babe Logo" style={{ width: '100%', height: 'auto' }} />
-                            <div className="b2-logo-subtitle text-black" style={{ width: '100%', textAlign: 'center', margin: '0.5rem 0 2rem 0' }}>MEET-PIC-VIDEO-CHAT</div>
+                            <div className="b2-logo-subtitle text-black" style={{ width: '100%', textAlign: 'center', margin: '0.5rem 0 2rem 0' }}>PHOTOS-VIDEOS-CHAT</div>
                         </div>
                     </div>
 
@@ -86,7 +85,6 @@ const Landing = () => {
                                     <div className="profile-info">
                                         <h3 className="profile-name" style={{ color: 'white' }}>{profile.name}</h3>
                                         <div className="profile-tags-container">
-                                            <span className={profile.services?.meet?.enabled ? 'service-active' : 'service-inactive'}>MEET</span>
                                             <span className={profile.services?.pic?.enabled ? 'service-active' : 'service-inactive'}>PIC</span>
                                             <span className={profile.services?.video?.enabled ? 'service-active' : 'service-inactive'}>VIDEO</span>
                                             <span className={profile.services?.chat?.enabled ? 'service-active' : 'service-inactive'}>CHAT</span>

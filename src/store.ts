@@ -132,14 +132,14 @@ const MOCK_CREATORS: CreatorProfile[] = [
         ],
         imageUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=400&h=400',
         services: {
-            meet: { enabled: true, price: 250 },
+            meet: { enabled: false, price: null },
             pic: { enabled: true, price: 15 },
             video: { enabled: true, price: 50 },
             chat: { enabled: true, price: 5 }
         },
         aiPersona: {
             basePrompt: "You are Anna, a friendly and flirty 25-year-old girl from Paris. You love fashion, traveling, and good wine.",
-            customInstructions: "Always be polite but playful. If they ask to meet, check the price first. Use emojis occasionally."
+            customInstructions: "Always be polite but playful. Always redirect them to buy private pics or chat. Use emojis occasionally."
         }
     },
     {
@@ -156,7 +156,7 @@ const MOCK_CREATORS: CreatorProfile[] = [
         mediaImages: [],
         imageUrl: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&q=80&w=400&h=400',
         services: {
-            meet: { enabled: true, price: 300 },
+            meet: { enabled: false, price: null },
             pic: { enabled: false, price: null },
             video: { enabled: true, price: 100 },
             chat: { enabled: true, price: 10 }
@@ -176,7 +176,7 @@ const MOCK_CREATORS: CreatorProfile[] = [
         mediaImages: [],
         imageUrl: 'https://images.unsplash.com/photo-1524250502761-1ac6f2e30d43?auto=format&fit=crop&q=80&w=400&h=400',
         services: {
-            meet: { enabled: true, price: 200 },
+            meet: { enabled: false, price: null },
             pic: { enabled: true, price: 10 },
             video: { enabled: false, price: null },
             chat: { enabled: true, price: 5 }
@@ -254,14 +254,14 @@ export const useAppStore = create<AppState>()(
                     mediaImages: [],
                     imageUrl: creatorToApprove.imageUrl || 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=400&h=400',
                     services: {
-                        meet: { enabled: true, price: 150 },
+                        meet: { enabled: false, price: null },
                         pic: { enabled: false, price: null },
                         video: { enabled: false, price: null },
                         chat: { enabled: true, price: 10 }
                     },
                     aiPersona: {
                         basePrompt: `You are ${creatorToApprove.name || 'a new creator'} on B2Babe.`,
-                        customInstructions: "Be friendly, engaging, and encourage clients to unlock media or book a meeting."
+                        customInstructions: "Be friendly, engaging, and encourage clients to unlock media or chat."
                     }
                 };
 
