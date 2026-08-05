@@ -1,6 +1,14 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+// Configure your myPOS PayLinks here
+export const MYPOS_PAYLINKS: Record<number, string> = {
+    20: "https://www.mypos.com/paylink/checkout/YOUR_LINK_HERE_20",
+    50: "https://www.mypos.com/paylink/checkout/YOUR_LINK_HERE_50",
+    100: "https://www.mypos.com/paylink/checkout/YOUR_LINK_HERE_100",
+    250: "https://www.mypos.com/paylink/checkout/YOUR_LINK_HERE_250"
+};
+
 export type Message = {
     id: string;
     senderId: string;

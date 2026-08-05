@@ -1,11 +1,12 @@
-import { useState } from 'react';
-import { useAppStore } from '../../store';
+import { useState, useEffect } from 'react';
+import { useAppStore, MYPOS_PAYLINKS } from '../../store';
 import { ArrowLeft, User, DollarSign, Lock, CreditCard, X } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
 const ClientProfile = () => {
     const { currentClientId, clients, updateClientProfile, logoutClient, rechargeWallet } = useAppStore();
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
 
     const client = clients.find(c => c.id === currentClientId);
 
@@ -15,16 +16,29 @@ const ClientProfile = () => {
     const [isRechargeOpen, setIsRechargeOpen] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
 
+    useEffect(() => {
+        const success = searchParams.get('success');
+        const amountStr = searchParams.get('amount');
+        if (success === 'true' && amountStr && currentClientId) {
+            const amount = Number(amountStr);
+            if (!isNaN(amount) && amount > 0) {
+                rechargeWallet(currentClientId, amount);
+                alert(`Successfully added €${amount} to your wallet! ✅`);
+                navigate('/client', { replace: true });
+            }
+        }
+    }, [searchParams, currentClientId, rechargeWallet, navigate]);
+
     const handleRecharge = (amount: number) => {
         setIsProcessing(true);
-        setTimeout(() => {
-            if (currentClientId) {
-                rechargeWallet(currentClientId, amount);
-            }
+        const payLink = MYPOS_PAYLINKS[amount];
+        if (payLink) {
+            // Redirect to myPOS PayLink Checkout
+            window.location.assign(payLink);
+        } else {
             setIsProcessing(false);
-            setIsRechargeOpen(false);
-            alert(`Successfully added €${amount} to your wallet! ✅`);
-        }, 1500);
+            alert("This recharge amount is not configured with a myPOS PayLink yet.");
+        }
     };
 
     const handleSave = () => {
@@ -157,11 +171,10 @@ const ClientProfile = () => {
                             <p style={{ color: '#aaa', marginBottom: '2rem', fontSize: '0.9rem' }}>
                                 Add funds securely to unlock private media, and chat. Current balance: <strong>€{client?.balance || 0}</strong>
                             </p>
-
                             {isProcessing ? (
                                 <div style={{ padding: '2rem 0' }}>
                                     <div className="spinner" style={{ width: '40px', height: '40px', border: '4px solid #333', borderTopColor: '#ffd700', borderRadius: '50%', margin: '0 auto', animation: 'spin 1s linear infinite' }}></div>
-                                    <p style={{ marginTop: '1rem', color: '#fff' }}>Connecting to Stripe...</p>
+                                    <p style={{ marginTop: '1rem', color: '#fff' }}>Connecting to myPOS...</p>
                                     <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
                                 </div>
                             ) : (
@@ -184,7 +197,7 @@ const ClientProfile = () => {
                                 </div>
                             )}
                             <p style={{ color: '#666', fontSize: '0.8rem', marginTop: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.3rem' }}>
-                                🔒 Secure Stripe Payment Sandbox
+                                🔒 Secure myPOS Checkout Integration
                             </p>
                         </div>
                     </div>

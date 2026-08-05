@@ -1,11 +1,13 @@
-import { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useParams, Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, MapPin, Star, MessageCircle, Calendar, ShieldCheck, Heart, Grid, Lock, Unlock, X } from 'lucide-react';
-import { useAppStore } from '../store';
+import { useAppStore, MYPOS_PAYLINKS } from '../store';
 import './Profile.css';
 
 const Profile = () => {
-    const { id } = useParams();
+    const id = useParams().id;
+    const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
     const { creators, currentClientId, chatSessions, sendMessage, clients, purchasePremiumMedia, rechargeWallet, subscribeToCreator } = useAppStore();
 
     // Find the correct profile from the store
@@ -50,15 +52,31 @@ const Profile = () => {
         }
     };
 
+    useEffect(() => {
+        const success = searchParams.get('success');
+        const amountStr = searchParams.get('amount');
+        if (success === 'true' && amountStr && clientId) {
+            const amount = Number(amountStr);
+            if (!isNaN(amount) && amount > 0) {
+                rechargeWallet(clientId, amount);
+                alert(`Successfully added €${amount} to your wallet! ✅`);
+                if (id) {
+                    navigate(`/profile/${id}`, { replace: true });
+                }
+            }
+        }
+    }, [searchParams, clientId, rechargeWallet, navigate, id]);
+
     const handleRecharge = (amount: number) => {
         setIsProcessing(true);
-        // Simulate Stripe redirect and processing delay
-        setTimeout(() => {
-            rechargeWallet(clientId, amount);
+        const payLink = MYPOS_PAYLINKS[amount];
+        if (payLink) {
+            // Redirect to myPOS PayLink Checkout
+            window.location.assign(payLink);
+        } else {
             setIsProcessing(false);
-            setIsRechargeOpen(false);
-            alert(`Successfully added €${amount} to your wallet! ✅`);
-        }, 1500);
+            alert("This recharge amount is not configured with a myPOS PayLink yet.");
+        }
     };
 
     if (!profile) return <div>Profile not found</div>;
@@ -428,7 +446,7 @@ const Profile = () => {
                         {isProcessing ? (
                             <div style={{ padding: '2rem 0' }}>
                                 <div className="spinner" style={{ width: '40px', height: '40px', border: '4px solid #333', borderTopColor: '#ffd700', borderRadius: '50%', margin: '0 auto', animation: 'spin 1s linear infinite' }}></div>
-                                <p style={{ marginTop: '1rem', color: '#fff' }}>Connecting to Stripe...</p>
+                                <p style={{ marginTop: '1rem', color: '#fff' }}>Connecting to myPOS...</p>
                                 <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
                             </div>
                         ) : (
@@ -451,7 +469,7 @@ const Profile = () => {
                             </div>
                         )}
                         <p style={{ color: '#666', fontSize: '0.8rem', marginTop: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.3rem' }}>
-                            🔒 Secure Stripe Payment Sandbox
+                            🔒 Secure myPOS Checkout Integration
                         </p>
                     </div>
                 </div>
