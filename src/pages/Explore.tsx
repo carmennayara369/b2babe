@@ -19,7 +19,8 @@ const Explore = () => {
     );
 
     return (
-        <div className="explore-page animate-fade-in">
+        <>
+            <div className="explore-page animate-fade-in">
             {/* Header */}
             <header className="explore-header">
                 <Link to="/" className="b2-logo" style={{ textDecoration: 'none' }}>
@@ -99,6 +100,7 @@ const Explore = () => {
                     </div>
                 )}
             </main>
+            </div>
 
             {/* Client Login Modal */}
             {isLoginModalOpen && (
@@ -165,7 +167,7 @@ const Explore = () => {
                     </div>
                 </div>
             )}
-        </div>
+        </>
     );
 };
 

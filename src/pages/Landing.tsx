@@ -23,7 +23,8 @@ const Landing = () => {
     };
 
     return (
-        <div className="landing-page animate-fade-in">
+        <>
+            <div className="landing-page animate-fade-in">
 
             {/* HERO SECTION */}
             <section className="hero-section">
@@ -175,6 +176,7 @@ const Landing = () => {
                     <div className="cta-bottom-right"><span className="cta-bottom-right-text">ACCESS</span></div>
                 </div>
             </section>
+            </div>
 
             {/* Client Login Modal */}
             {isLoginModalOpen && (
@@ -243,8 +245,7 @@ const Landing = () => {
                     </div>
                 </div>
             )}
-
-        </div>
+        </>
     );
 };
 
