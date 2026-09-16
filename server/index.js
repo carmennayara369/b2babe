@@ -68,6 +68,122 @@ app.get('/api/sync', (req, res) => {
     }
 });
 
+// Push entire local state to database (e.g. migrate current browser edits to server DB)
+app.post('/api/sync/push', (req, res) => {
+    try {
+        const { creators, clients, adminPassword } = req.body;
+
+        const syncTransaction = db.transaction(() => {
+            if (adminPassword) {
+                db.prepare('INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)').run('adminPassword', adminPassword);
+            }
+
+            if (Array.isArray(creators) && creators.length > 0) {
+                const upsertCreator = db.prepare(`
+                    INSERT INTO creators (
+                        id, name, bio, location, views, status, aiEnabled, vip, phone, email, password,
+                        age, height, weight, measurements, hairColor, eyeColor, imageUrl, services, mediaImages, premiumMedia, aiPersona, createdAt, updatedAt
+                    ) VALUES (
+                        @id, @name, @bio, @location, @views, @status, @aiEnabled, @vip, @phone, @email, @password,
+                        @age, @height, @weight, @measurements, @hairColor, @eyeColor, @imageUrl, @services, @mediaImages, @premiumMedia, @aiPersona, @createdAt, @updatedAt
+                    )
+                    ON CONFLICT(id) DO UPDATE SET
+                        name=excluded.name,
+                        bio=excluded.bio,
+                        location=excluded.location,
+                        views=excluded.views,
+                        status=excluded.status,
+                        aiEnabled=excluded.aiEnabled,
+                        vip=excluded.vip,
+                        phone=excluded.phone,
+                        email=excluded.email,
+                        password=excluded.password,
+                        age=excluded.age,
+                        height=excluded.height,
+                        weight=excluded.weight,
+                        measurements=excluded.measurements,
+                        hairColor=excluded.hairColor,
+                        eyeColor=excluded.eyeColor,
+                        imageUrl=excluded.imageUrl,
+                        services=excluded.services,
+                        mediaImages=excluded.mediaImages,
+                        premiumMedia=excluded.premiumMedia,
+                        aiPersona=excluded.aiPersona,
+                        updatedAt=excluded.updatedAt
+                `);
+
+                for (const c of creators) {
+                    upsertCreator.run({
+                        id: c.id,
+                        name: c.name || '',
+                        bio: c.bio || '',
+                        location: c.location || '',
+                        views: c.views || 0,
+                        status: c.status || 'active',
+                        aiEnabled: c.aiEnabled ? 1 : 0,
+                        vip: c.vip ? 1 : 0,
+                        phone: c.phone || '',
+                        email: c.email || `${c.id}@b2babe.com`,
+                        password: c.password || 'b2babe123',
+                        age: c.age || 24,
+                        height: c.height || '170 cm',
+                        weight: c.weight || '54 kg',
+                        measurements: c.measurements || '90-60-90',
+                        hairColor: c.hairColor || 'Brunette',
+                        eyeColor: c.eyeColor || 'Brown',
+                        imageUrl: c.imageUrl || '',
+                        services: JSON.stringify(c.services || null),
+                        mediaImages: JSON.stringify(c.mediaImages || []),
+                        premiumMedia: JSON.stringify(c.premiumMedia || []),
+                        aiPersona: JSON.stringify(c.aiPersona || null),
+                        createdAt: c.createdAt || Date.now(),
+                        updatedAt: Date.now()
+                    });
+                }
+            }
+
+            if (Array.isArray(clients) && clients.length > 0) {
+                const upsertClient = db.prepare(`
+                    INSERT INTO clients (id, name, email, password, balance, phone, avatar, status, purchasedMedia, subscribedCreators, createdAt)
+                    VALUES (@id, @name, @email, @password, @balance, @phone, @avatar, @status, @purchasedMedia, @subscribedCreators, @createdAt)
+                    ON CONFLICT(id) DO UPDATE SET
+                        name=excluded.name,
+                        email=excluded.email,
+                        password=excluded.password,
+                        balance=excluded.balance,
+                        phone=excluded.phone,
+                        avatar=excluded.avatar,
+                        status=excluded.status,
+                        purchasedMedia=excluded.purchasedMedia,
+                        subscribedCreators=excluded.subscribedCreators
+                `);
+
+                for (const cl of clients) {
+                    upsertClient.run({
+                        id: cl.id,
+                        name: cl.name || '',
+                        email: cl.email || '',
+                        password: cl.password || 'b2babe123',
+                        balance: cl.balance || 0,
+                        phone: cl.phone || '',
+                        avatar: cl.avatar || '',
+                        status: cl.status || 'active',
+                        purchasedMedia: JSON.stringify(cl.purchasedMedia || []),
+                        subscribedCreators: JSON.stringify(cl.subscribedCreators || []),
+                        createdAt: cl.createdAt || Date.now()
+                    });
+                }
+            }
+        });
+
+        syncTransaction();
+        res.json({ success: true, message: 'Database successfully synced with browser data' });
+    } catch (err) {
+        console.error('Error syncing push state:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // 2. Creators
 app.get('/api/creators', (req, res) => {
     try {

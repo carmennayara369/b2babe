@@ -2,7 +2,7 @@ import { useState } from 'react';
 import {
     Users, MessageSquare, Bot, LayoutDashboard,
     Search, Plus, Edit2, ShieldAlert, Cpu, X, User,
-    LogOut, Lock, ArrowLeft, Trash2
+    LogOut, Lock, ArrowLeft, Trash2, Database, Check
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAppStore, type CreatorProfile, type ClientProfile } from '../store';
@@ -11,11 +11,14 @@ import './Admin.css';
 const AdminGlobal = () => {
     const [activeTab, setActiveTab] = useState('overview');
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [isSyncing, setIsSyncing] = useState(false);
+    const [syncSuccess, setSyncSuccess] = useState(false);
     const {
         creators, pendingCreators, approveCreator, rejectCreator,
         clients, chatSessions, toggleAiForSession, sendMessage,
         updateCreatorProfile, updateClientProfile,
         addCreatorProfile, deleteCreatorProfile,
+        pushLocalToDatabase,
         isAdminAuthenticated, loginAdmin, logoutAdmin
     } = useAppStore();
 
@@ -225,9 +228,35 @@ const AdminGlobal = () => {
                                 <h1>Profile Management</h1>
                                 <p>Create and edit creator accounts and generic profiles.</p>
                             </div>
-                            <button className="btn-primary flex-center gap-2" onClick={handleCreateNewClick}>
-                                <Plus size={18} /> New Profile
-                            </button>
+                            <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                                <button
+                                    className="btn-secondary flex-center gap-2"
+                                    onClick={async () => {
+                                        setIsSyncing(true);
+                                        const success = await pushLocalToDatabase();
+                                        setIsSyncing(false);
+                                        if (success) {
+                                            setSyncSuccess(true);
+                                            setTimeout(() => setSyncSuccess(false), 3000);
+                                        } else {
+                                            alert("La synchronisation a échoué. Assurez-vous que le serveur Node.js est bien démarré.");
+                                        }
+                                    }}
+                                    disabled={isSyncing}
+                                    style={{
+                                        border: syncSuccess ? '1px solid #4caf50' : '1px solid #444',
+                                        color: syncSuccess ? '#4caf50' : '#ccc',
+                                        cursor: isSyncing ? 'not-allowed' : 'pointer'
+                                    }}
+                                    title="Enregistrer toutes les modifications du navigateur actuel dans la base de données serveur"
+                                >
+                                    {syncSuccess ? <Check size={16} color="#4caf50" /> : <Database size={16} />}
+                                    {syncSuccess ? 'Enregistré sur la Base !' : isSyncing ? 'Synchronisation...' : 'Sauvegarder sur la Base'}
+                                </button>
+                                <button className="btn-primary flex-center gap-2" onClick={handleCreateNewClick}>
+                                    <Plus size={18} /> New Profile
+                                </button>
+                            </div>
                         </div>
 
                         <div className="admin-panel">

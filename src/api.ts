@@ -21,6 +21,20 @@ export const api = {
         }
     },
 
+    async pushSync(payload: { creators: CreatorProfile[]; clients: ClientProfile[]; adminPassword?: string }): Promise<boolean> {
+        try {
+            const res = await fetch(`${API_BASE}/sync/push`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            return res.ok;
+        } catch (e) {
+            console.error('API pushSync error:', e);
+            return false;
+        }
+    },
+
     async createCreator(data: Partial<CreatorProfile>): Promise<CreatorProfile | null> {
         try {
             const res = await fetch(`${API_BASE}/creators`, {

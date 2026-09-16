@@ -142,6 +142,7 @@ interface AppState {
     rechargeWallet: (clientId: string, amount: number) => void;
     subscribeToCreator: (clientId: string, creatorId: string) => void;
     initSync: () => Promise<void>;
+    pushLocalToDatabase: () => Promise<boolean>;
 
     // Chat Actions
     sendMessage: (sessionId: string, senderId: string, receiverId: string, text: string) => void;
@@ -434,6 +435,15 @@ export const useAppStore = create<AppState>()(
                         adminPassword: data.adminPassword || state.adminPassword
                     }));
                 }
+            },
+
+            pushLocalToDatabase: async () => {
+                const state = get();
+                return await api.pushSync({
+                    creators: state.creators || [],
+                    clients: state.clients || [],
+                    adminPassword: state.adminPassword || 'admin2026'
+                });
             },
 
             updateClientProfile: (id, data) => {
