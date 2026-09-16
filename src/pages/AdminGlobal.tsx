@@ -98,26 +98,31 @@ const AdminGlobal = () => {
                     const canvas = document.createElement('canvas');
                     let width = img.width;
                     let height = img.height;
-                    const max_size = 600; // Optimized for localStorage quota safety
+                    const isGalleryImage = isMedia;
+                    const max_size = isGalleryImage ? 1920 : 1200; // High Definition (Full HD)
 
                     if (width > height && width > max_size) {
-                        height *= max_size / width;
+                        height = Math.round(height * (max_size / width));
                         width = max_size;
                     } else if (height > max_size) {
-                        width *= max_size / height;
+                        width = Math.round(width * (max_size / height));
                         height = max_size;
                     }
 
                     canvas.width = width;
                     canvas.height = height;
                     const ctx = canvas.getContext('2d');
-                    ctx?.drawImage(img, 0, 0, width, height);
-                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7); // 70% quality (~40KB)
+                    if (ctx) {
+                        ctx.imageSmoothingEnabled = true;
+                        ctx.imageSmoothingQuality = 'high';
+                        ctx.drawImage(img, 0, 0, width, height);
+                    }
+                    const highResDataUrl = canvas.toDataURL('image/jpeg', 0.90); // 90% High Definition quality
 
                     if (isMedia) {
-                        setFormData(prev => ({ ...prev, mediaImages: [...(prev.mediaImages || []), compressedDataUrl] }));
+                        setFormData(prev => ({ ...prev, mediaImages: [...(prev.mediaImages || []), highResDataUrl] }));
                     } else {
-                        setFormData(prev => ({ ...prev, imageUrl: compressedDataUrl }));
+                        setFormData(prev => ({ ...prev, imageUrl: highResDataUrl }));
                     }
                 };
                 img.src = reader.result as string;

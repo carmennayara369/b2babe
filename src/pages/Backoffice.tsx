@@ -139,31 +139,35 @@ const Backoffice = () => {
                     const canvas = document.createElement('canvas');
                     let width = img.width;
                     let height = img.height;
-                    const max_size = 600; // Optimized for localStorage safety
+                    const max_size = mediaType === 'avatar' ? 1200 : 1920; // Full HD for gallery & premium media
                     if (width > height && width > max_size) {
-                        height *= max_size / width;
+                        height = Math.round(height * (max_size / width));
                         width = max_size;
                     } else if (height > max_size) {
-                        width *= max_size / height;
+                        width = Math.round(width * (max_size / height));
                         height = max_size;
                     }
 
                     canvas.width = width;
                     canvas.height = height;
                     const ctx = canvas.getContext('2d');
-                    ctx?.drawImage(img, 0, 0, width, height);
-                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7); // 70% quality (~40KB)
+                    if (ctx) {
+                        ctx.imageSmoothingEnabled = true;
+                        ctx.imageSmoothingQuality = 'high';
+                        ctx.drawImage(img, 0, 0, width, height);
+                    }
+                    const highResDataUrl = canvas.toDataURL('image/jpeg', 0.90); // 90% High Definition quality
 
                     if (mediaType === 'public' && currentCreatorId && currentCreator) {
                         updateCreatorProfile(currentCreatorId, {
-                            mediaImages: [...(currentCreator.mediaImages || []), compressedDataUrl]
+                            mediaImages: [...(currentCreator.mediaImages || []), highResDataUrl]
                         });
                     } else if (mediaType === 'premium' && currentCreatorId && currentCreator) {
                         const price = prompt("Set a price for this premium media (€):", "15");
                         if (price && !isNaN(Number(price))) {
                             const newMedia = {
                                 id: `media_${Date.now()}_${Math.random()}`,
-                                url: compressedDataUrl,
+                                url: highResDataUrl,
                                 price: Number(price)
                             };
                             updateCreatorProfile(currentCreatorId, {
@@ -171,7 +175,7 @@ const Backoffice = () => {
                             });
                         }
                     } else if (mediaType === 'avatar') {
-                        setEditImageUrl(compressedDataUrl);
+                        setEditImageUrl(highResDataUrl);
                     }
                 };
                 img.src = fileReader.result as string;

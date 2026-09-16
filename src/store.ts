@@ -173,22 +173,22 @@ const MOCK_CREATORS: CreatorProfile[] = [
         hairColor: 'Brunette',
         eyeColor: 'Hazel',
         mediaImages: [
-            'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=400&h=400',
-            'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&q=80&w=400&h=400'
+            'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=90&w=1200',
+            'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&q=90&w=1200'
         ],
         premiumMedia: [
             {
                 id: 'media_1_c1',
-                url: 'https://images.unsplash.com/photo-1611042553365-9b101441c135?auto=format&fit=crop&q=80&w=500&h=600',
+                url: 'https://images.unsplash.com/photo-1611042553365-9b101441c135?auto=format&fit=crop&q=90&w=1200',
                 price: 15
             },
             {
                 id: 'media_2_c1',
-                url: 'https://images.unsplash.com/photo-1524250502761-1ac6f2e30d43?auto=format&fit=crop&q=80&w=500&h=600',
+                url: 'https://images.unsplash.com/photo-1524250502761-1ac6f2e30d43?auto=format&fit=crop&q=90&w=1200',
                 price: 25
             }
         ],
-        imageUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=400&h=400',
+        imageUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=90&w=1200',
         services: {
             meet: { enabled: false, price: null },
             pic: { enabled: true, price: 15 },
@@ -219,7 +219,7 @@ const MOCK_CREATORS: CreatorProfile[] = [
         hairColor: 'Blonde',
         eyeColor: 'Blue',
         mediaImages: [],
-        imageUrl: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&q=80&w=400&h=400',
+        imageUrl: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&q=90&w=1200',
         services: {
             meet: { enabled: false, price: null },
             pic: { enabled: false, price: null },
@@ -246,7 +246,7 @@ const MOCK_CREATORS: CreatorProfile[] = [
         hairColor: 'Auburn',
         eyeColor: 'Green',
         mediaImages: [],
-        imageUrl: 'https://images.unsplash.com/photo-1524250502761-1ac6f2e30d43?auto=format&fit=crop&q=80&w=400&h=400',
+        imageUrl: 'https://images.unsplash.com/photo-1524250502761-1ac6f2e30d43?auto=format&fit=crop&q=90&w=1200',
         services: {
             meet: { enabled: false, price: null },
             pic: { enabled: true, price: 10 },
