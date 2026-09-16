@@ -230,7 +230,7 @@ const AdminGlobal = () => {
                             </div>
                             <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
                                 <button
-                                    className="btn-secondary flex-center gap-2"
+                                    className="flex-center gap-2"
                                     onClick={async () => {
                                         setIsSyncing(true);
                                         const success = await pushLocalToDatabase();
@@ -244,14 +244,23 @@ const AdminGlobal = () => {
                                     }}
                                     disabled={isSyncing}
                                     style={{
-                                        border: syncSuccess ? '1px solid #4caf50' : '1px solid #444',
-                                        color: syncSuccess ? '#4caf50' : '#ccc',
-                                        cursor: isSyncing ? 'not-allowed' : 'pointer'
+                                        background: syncSuccess ? '#16a34a' : isSyncing ? '#065f46' : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                                        color: '#ffffff',
+                                        border: 'none',
+                                        padding: '0.75rem 1.5rem',
+                                        borderRadius: '8px',
+                                        fontWeight: 600,
+                                        fontSize: '0.95rem',
+                                        cursor: isSyncing ? 'not-allowed' : 'pointer',
+                                        boxShadow: '0 4px 12px rgba(16, 185, 129, 0.35)',
+                                        transition: 'all 0.2s ease',
+                                        display: 'inline-flex',
+                                        alignItems: 'center'
                                     }}
                                     title="Enregistrer toutes les modifications du navigateur actuel dans la base de données serveur"
                                 >
-                                    {syncSuccess ? <Check size={16} color="#4caf50" /> : <Database size={16} />}
-                                    {syncSuccess ? 'Enregistré sur la Base !' : isSyncing ? 'Synchronisation...' : 'Sauvegarder sur la Base'}
+                                    {syncSuccess ? <Check size={18} color="#ffffff" /> : <Database size={18} color="#ffffff" />}
+                                    <span>{syncSuccess ? 'Enregistré sur la Base !' : isSyncing ? 'Synchronisation...' : 'Sauvegarder sur la Base'}</span>
                                 </button>
                                 <button className="btn-primary flex-center gap-2" onClick={handleCreateNewClick}>
                                     <Plus size={18} /> New Profile
