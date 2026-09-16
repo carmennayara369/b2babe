@@ -58,10 +58,10 @@ const Backoffice = () => {
 
     const syncEditState = useCallback(() => {
         if (currentCreator) {
-            setEditName(currentCreator.name);
-            setEditBio(currentCreator.bio);
-            setEditLocation(currentCreator.location);
-            setEditImageUrl(currentCreator.imageUrl);
+            setEditName(currentCreator.name || '');
+            setEditBio(currentCreator.bio || '');
+            setEditLocation(currentCreator.location || '');
+            setEditImageUrl(currentCreator.imageUrl || '');
             setEditAge(currentCreator.age);
             setEditHeight(currentCreator.height || '');
             setEditWeight(currentCreator.weight || '');
@@ -69,31 +69,10 @@ const Backoffice = () => {
             setEditHairColor(currentCreator.hairColor || '');
             setEditEyeColor(currentCreator.eyeColor || '');
             setEditPassword('');
-            if (currentCreator.services) setEditServices(currentCreator.services);
-            if (currentCreator.aiPersona) setEditAIPersona(currentCreator.aiPersona);
+            if (currentCreator.services) setEditServices(JSON.parse(JSON.stringify(currentCreator.services)));
+            if (currentCreator.aiPersona) setEditAIPersona(JSON.parse(JSON.stringify(currentCreator.aiPersona)));
         }
     }, [currentCreator]);
-
-    const [prevCreatorId, setPrevCreatorId] = useState<string | null>(null);
-
-    if (currentCreatorId !== prevCreatorId) {
-        setPrevCreatorId(currentCreatorId);
-        if (currentCreator) {
-            setEditName(currentCreator.name);
-            setEditBio(currentCreator.bio);
-            setEditLocation(currentCreator.location);
-            setEditImageUrl(currentCreator.imageUrl);
-            setEditAge(currentCreator.age);
-            setEditHeight(currentCreator.height || '');
-            setEditWeight(currentCreator.weight || '');
-            setEditMeasurements(currentCreator.measurements || '');
-            setEditHairColor(currentCreator.hairColor || '');
-            setEditEyeColor(currentCreator.eyeColor || '');
-            setEditPassword('');
-            if (currentCreator.services) setEditServices(currentCreator.services);
-            if (currentCreator.aiPersona) setEditAIPersona(currentCreator.aiPersona);
-        }
-    }
 
     const handleLoginSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -160,8 +139,7 @@ const Backoffice = () => {
                     const canvas = document.createElement('canvas');
                     let width = img.width;
                     let height = img.height;
-                    const max_size = 1080; // High quality threshold
-
+                    const max_size = 600; // Optimized for localStorage safety
                     if (width > height && width > max_size) {
                         height *= max_size / width;
                         width = max_size;
@@ -174,7 +152,7 @@ const Backoffice = () => {
                     canvas.height = height;
                     const ctx = canvas.getContext('2d');
                     ctx?.drawImage(img, 0, 0, width, height);
-                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85); // 85% quality
+                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7); // 70% quality (~40KB)
 
                     if (mediaType === 'public' && currentCreatorId && currentCreator) {
                         updateCreatorProfile(currentCreatorId, {

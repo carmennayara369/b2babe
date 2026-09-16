@@ -35,7 +35,7 @@ const AdminGlobal = () => {
 
     const handleEditClick = (profile: CreatorProfile) => {
         setEditingProfile(profile);
-        setFormData(profile);
+        setFormData(JSON.parse(JSON.stringify(profile)));
     };
 
     const handleEditClientClick = (client: ClientProfile) => {
@@ -62,7 +62,7 @@ const AdminGlobal = () => {
                     const canvas = document.createElement('canvas');
                     let width = img.width;
                     let height = img.height;
-                    const max_size = 1080; // High quality threshold
+                    const max_size = 600; // Optimized for localStorage quota safety
 
                     if (width > height && width > max_size) {
                         height *= max_size / width;
@@ -76,7 +76,7 @@ const AdminGlobal = () => {
                     canvas.height = height;
                     const ctx = canvas.getContext('2d');
                     ctx?.drawImage(img, 0, 0, width, height);
-                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85); // 85% quality
+                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7); // 70% quality (~40KB)
 
                     if (isMedia) {
                         setFormData(prev => ({ ...prev, mediaImages: [...(prev.mediaImages || []), compressedDataUrl] }));

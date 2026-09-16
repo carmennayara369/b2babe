@@ -1,5 +1,30 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
+
+const safeLocalStorage = {
+    getItem: (key: string): string | null => {
+        try {
+            return localStorage.getItem(key);
+        } catch (e) {
+            console.warn("Could not read from localStorage:", e);
+            return null;
+        }
+    },
+    setItem: (key: string, value: string): void => {
+        try {
+            localStorage.setItem(key, value);
+        } catch (e) {
+            console.error("Storage quota exceeded. Data may not be fully cached in browser:", e);
+        }
+    },
+    removeItem: (key: string): void => {
+        try {
+            localStorage.removeItem(key);
+        } catch (e) {
+            console.warn("Could not remove from localStorage:", e);
+        }
+    }
+};
 
 // Configure your myPOS PayLinks here
 export const MYPOS_PAYLINKS: Record<number, string> = {
@@ -579,6 +604,7 @@ export const useAppStore = create<AppState>()(
         {
             name: 'b2babe-storage',
             version: 6,
+            storage: createJSONStorage(() => safeLocalStorage),
             migrate: (persistedState: unknown) => {
                 const state = persistedState as Record<string, unknown>;
                 const defaultCreators = MOCK_CREATORS;
@@ -617,18 +643,3 @@ export const useAppStore = create<AppState>()(
         }
     )
 );
-
-if (typeof window !== 'undefined') {
-    window.addEventListener('storage', (e) => {
-        if (e.key === 'b2babe-storage' && e.newValue) {
-            try {
-                const parsed = JSON.parse(e.newValue);
-                if (parsed && parsed.state) {
-                    useAppStore.setState(parsed.state);
-                }
-            } catch (err) {
-                console.error("Failed to sync state from storage", err);
-            }
-        }
-    });
-}
