@@ -199,9 +199,12 @@ const Landing = () => {
                                 }
                             } else {
                                 if (email && password) {
-                                    loginClient(email, password);
-                                    setIsLoginModalOpen(false);
-                                    navigate('/client');
+                                    const ok = loginClient(email, password);
+                                    if (ok) {
+                                        setIsLoginModalOpen(false);
+                                        setPassword('');
+                                        navigate('/client');
+                                    }
                                 }
                             }
                         }}>

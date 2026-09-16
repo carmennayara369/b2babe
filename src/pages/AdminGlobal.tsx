@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import {
-    Users, MessageSquare, Bot, Settings, LayoutDashboard,
-    Search, Plus, MoreVertical, Edit2, ShieldAlert, Cpu, X, User
+    Users, MessageSquare, Bot, LayoutDashboard,
+    Search, Plus, MoreVertical, Edit2, ShieldAlert, Cpu, X, User,
+    LogOut, Lock, ArrowLeft
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAppStore, type CreatorProfile, type ClientProfile } from '../store';
@@ -10,7 +11,14 @@ import './Admin.css';
 const AdminGlobal = () => {
     const [activeTab, setActiveTab] = useState('overview');
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const { creators, pendingCreators, approveCreator, rejectCreator, clients, chatSessions, toggleAiForSession, sendMessage, updateCreatorProfile, updateClientProfile } = useAppStore();
+    const {
+        creators, pendingCreators, approveCreator, rejectCreator,
+        clients, chatSessions, toggleAiForSession, sendMessage,
+        updateCreatorProfile, updateClientProfile,
+        isAdminAuthenticated, loginAdmin, logoutAdmin
+    } = useAppStore();
+
+    const [adminPasswordInput, setAdminPasswordInput] = useState('');
 
     // Stats calculations
     const activeProfilesCount = creators.filter(c => c.status === 'active').length;
@@ -467,6 +475,112 @@ const AdminGlobal = () => {
             default:
                 return null;
         }
+    };
+
+    if (!isAdminAuthenticated) {
+        return (
+            <div style={{
+                minHeight: '100vh',
+                backgroundColor: '#0a0a0a',
+                color: '#fff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontFamily: 'Inter, sans-serif',
+                padding: '1.5rem'
+            }}>
+                <div style={{
+                    width: '100%',
+                    maxWidth: '420px',
+                    background: '#141414',
+                    border: '1px solid #2a2a2a',
+                    borderRadius: '16px',
+                    padding: '2.5rem',
+                    boxShadow: '0 20px 40px rgba(0,0,0,0.8)'
+                }}>
+                    <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                        <img src="/logo-white.png" alt="B2Babe" style={{ width: '130px', marginBottom: '0.8rem' }} />
+                        <div style={{
+                            display: 'inline-block',
+                            background: '#222',
+                            color: '#ffd700',
+                            padding: '0.2rem 0.8rem',
+                            borderRadius: '20px',
+                            fontSize: '0.75rem',
+                            fontWeight: 'bold',
+                            letterSpacing: '1px',
+                            marginBottom: '1rem'
+                        }}>
+                            SUPER ADMIN PORTAL
+                        </div>
+                        <h2 style={{ fontSize: '1.4rem', margin: 0, fontWeight: 700 }}>Restricted Access</h2>
+                        <p style={{ color: '#777', fontSize: '0.85rem', marginTop: '0.5rem' }}>
+                            Please enter your master password to access the platform administration.
+                        </p>
+                    </div>
+
+                    <form onSubmit={(e) => {
+                        e.preventDefault();
+                        if (loginAdmin(adminPasswordInput)) {
+                            setAdminPasswordInput('');
+                        }
+                    }}>
+                        <div style={{ marginBottom: '1.5rem' }}>
+                            <label style={{ display: 'block', marginBottom: '0.5rem', color: '#aaa', fontSize: '0.85rem' }}>
+                                Master Password
+                            </label>
+                            <div style={{ position: 'relative' }}>
+                                <input
+                                    type="password"
+                                    placeholder="Enter admin password..."
+                                    value={adminPasswordInput}
+                                    onChange={(e) => setAdminPasswordInput(e.target.value)}
+                                    autoFocus
+                                    required
+                                    style={{
+                                        width: '100%',
+                                        padding: '0.85rem 1rem',
+                                        background: '#202020',
+                                        border: '1px solid #333',
+                                        borderRadius: '10px',
+                                        color: '#fff',
+                                        fontSize: '1rem',
+                                        boxSizing: 'border-box'
+                                    }}
+                                />
+                            </div>
+                        </div>
+
+                        <button
+                            type="submit"
+                            style={{
+                                width: '100%',
+                                padding: '0.9rem',
+                                background: '#ffd700',
+                                color: '#000',
+                                border: 'none',
+                                borderRadius: '10px',
+                                fontWeight: 'bold',
+                                fontSize: '1rem',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '0.5rem'
+                            }}
+                        >
+                            <Lock size={18} /> Access Dashboard
+                        </button>
+                    </form>
+
+                    <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+                        <Link to="/" style={{ color: '#666', textDecoration: 'none', fontSize: '0.85rem', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+                            <ArrowLeft size={16} /> Return to public site
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        );
     }
 
     return (
@@ -505,9 +619,10 @@ const AdminGlobal = () => {
 
                     <div className="nav-divider"></div>
 
-                    <button className="super-nav-item">
-                        <Settings size={20} /> Platform Settings
+                    <button className="super-nav-item" onClick={logoutAdmin} style={{ color: '#ff5555' }}>
+                        <LogOut size={20} /> Sign Out
                     </button>
+
                     <Link to="/" className="super-nav-item text-muted" style={{ textDecoration: 'none' }}>
                         Return to site
                     </Link>
@@ -524,9 +639,30 @@ const AdminGlobal = () => {
                             <input type="text" placeholder="Global search..." />
                         </div>
                     </div>
-                    <div className="header-admin-profile">
-                        <div className="avatar">AD</div>
-                        <span>Head Admin</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+                        <div className="header-admin-profile">
+                            <div className="avatar">AD</div>
+                            <span>Head Admin</span>
+                        </div>
+                        <button
+                            onClick={logoutAdmin}
+                            title="Sign Out"
+                            style={{
+                                background: 'rgba(255, 68, 68, 0.15)',
+                                border: '1px solid rgba(255, 68, 68, 0.3)',
+                                color: '#ff6b6b',
+                                padding: '0.4rem 0.8rem',
+                                borderRadius: '8px',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.4rem',
+                                fontSize: '0.85rem',
+                                fontWeight: 'bold'
+                            }}
+                        >
+                            <LogOut size={16} /> Sign Out
+                        </button>
                     </div>
                 </header>
                 <div className="super-admin-content-wrapper">
@@ -601,6 +737,73 @@ const AdminGlobal = () => {
                                     onChange={e => setFormData({ ...formData, phone: e.target.value })}
                                     style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid #333', background: '#222', color: 'white', boxSizing: 'border-box' }}
                                 />
+                            </div>
+
+                            {/* Physical Attributes & Measurements */}
+                            <div style={{ marginBottom: '1.5rem', border: '1px solid #333', padding: '1rem', borderRadius: '8px', background: '#191919' }}>
+                                <h4 style={{ margin: '0 0 1rem 0', color: '#ffd700', fontSize: '0.95rem' }}>Physical Attributes & Stats</h4>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                    <div>
+                                        <label style={{ display: 'block', marginBottom: '0.3rem', color: '#888', fontSize: '0.8rem' }}>Age</label>
+                                        <input
+                                            type="number"
+                                            value={formData.age || ''}
+                                            onChange={e => setFormData({ ...formData, age: parseInt(e.target.value) || undefined })}
+                                            placeholder="e.g. 24"
+                                            style={{ width: '100%', padding: '0.65rem', borderRadius: '4px', border: '1px solid #333', background: '#222', color: 'white', boxSizing: 'border-box' }}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label style={{ display: 'block', marginBottom: '0.3rem', color: '#888', fontSize: '0.8rem' }}>Height (Taille)</label>
+                                        <input
+                                            type="text"
+                                            value={formData.height || ''}
+                                            onChange={e => setFormData({ ...formData, height: e.target.value })}
+                                            placeholder="e.g. 172 cm"
+                                            style={{ width: '100%', padding: '0.65rem', borderRadius: '4px', border: '1px solid #333', background: '#222', color: 'white', boxSizing: 'border-box' }}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label style={{ display: 'block', marginBottom: '0.3rem', color: '#888', fontSize: '0.8rem' }}>Weight (Poids)</label>
+                                        <input
+                                            type="text"
+                                            value={formData.weight || ''}
+                                            onChange={e => setFormData({ ...formData, weight: e.target.value })}
+                                            placeholder="e.g. 54 kg"
+                                            style={{ width: '100%', padding: '0.65rem', borderRadius: '4px', border: '1px solid #333', background: '#222', color: 'white', boxSizing: 'border-box' }}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label style={{ display: 'block', marginBottom: '0.3rem', color: '#888', fontSize: '0.8rem' }}>Measurements (Mensurations)</label>
+                                        <input
+                                            type="text"
+                                            value={formData.measurements || ''}
+                                            onChange={e => setFormData({ ...formData, measurements: e.target.value })}
+                                            placeholder="e.g. 90-60-90"
+                                            style={{ width: '100%', padding: '0.65rem', borderRadius: '4px', border: '1px solid #333', background: '#222', color: 'white', boxSizing: 'border-box' }}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label style={{ display: 'block', marginBottom: '0.3rem', color: '#888', fontSize: '0.8rem' }}>Hair Color (Cheveux)</label>
+                                        <input
+                                            type="text"
+                                            value={formData.hairColor || ''}
+                                            onChange={e => setFormData({ ...formData, hairColor: e.target.value })}
+                                            placeholder="e.g. Brunette / Blonde"
+                                            style={{ width: '100%', padding: '0.65rem', borderRadius: '4px', border: '1px solid #333', background: '#222', color: 'white', boxSizing: 'border-box' }}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label style={{ display: 'block', marginBottom: '0.3rem', color: '#888', fontSize: '0.8rem' }}>Eye Color (Yeux)</label>
+                                        <input
+                                            type="text"
+                                            value={formData.eyeColor || ''}
+                                            onChange={e => setFormData({ ...formData, eyeColor: e.target.value })}
+                                            placeholder="e.g. Brown / Hazel"
+                                            style={{ width: '100%', padding: '0.65rem', borderRadius: '4px', border: '1px solid #333', background: '#222', color: 'white', boxSizing: 'border-box' }}
+                                        />
+                                    </div>
+                                </div>
                             </div>
                             <div style={{ marginBottom: '1rem' }}>
                                 <input

@@ -4,7 +4,7 @@ import {
     LayoutDashboard, User, Image, MessageSquare, Calendar, DollarSign, LogOut, Menu, X, Plus, Trash2, Lock
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAppStore } from '../store';
+import { useAppStore, type CreatorProfile } from '../store';
 import './Backoffice.css';
 
 const Backoffice = () => {
@@ -34,6 +34,13 @@ const Backoffice = () => {
     const [editBio, setEditBio] = useState('');
     const [editLocation, setEditLocation] = useState('');
     const [editImageUrl, setEditImageUrl] = useState('');
+    const [editAge, setEditAge] = useState<number | undefined>(undefined);
+    const [editHeight, setEditHeight] = useState('');
+    const [editWeight, setEditWeight] = useState('');
+    const [editMeasurements, setEditMeasurements] = useState('');
+    const [editHairColor, setEditHairColor] = useState('');
+    const [editEyeColor, setEditEyeColor] = useState('');
+    const [editPassword, setEditPassword] = useState('');
     const [editServices, setEditServices] = useState(currentCreator?.services || {
         meet: { enabled: false, price: null },
         pic: { enabled: false, price: null },
@@ -55,6 +62,13 @@ const Backoffice = () => {
             setEditBio(currentCreator.bio);
             setEditLocation(currentCreator.location);
             setEditImageUrl(currentCreator.imageUrl);
+            setEditAge(currentCreator.age);
+            setEditHeight(currentCreator.height || '');
+            setEditWeight(currentCreator.weight || '');
+            setEditMeasurements(currentCreator.measurements || '');
+            setEditHairColor(currentCreator.hairColor || '');
+            setEditEyeColor(currentCreator.eyeColor || '');
+            setEditPassword('');
             if (currentCreator.services) setEditServices(currentCreator.services);
             if (currentCreator.aiPersona) setEditAIPersona(currentCreator.aiPersona);
         }
@@ -69,6 +83,13 @@ const Backoffice = () => {
             setEditBio(currentCreator.bio);
             setEditLocation(currentCreator.location);
             setEditImageUrl(currentCreator.imageUrl);
+            setEditAge(currentCreator.age);
+            setEditHeight(currentCreator.height || '');
+            setEditWeight(currentCreator.weight || '');
+            setEditMeasurements(currentCreator.measurements || '');
+            setEditHairColor(currentCreator.hairColor || '');
+            setEditEyeColor(currentCreator.eyeColor || '');
+            setEditPassword('');
             if (currentCreator.services) setEditServices(currentCreator.services);
             if (currentCreator.aiPersona) setEditAIPersona(currentCreator.aiPersona);
         }
@@ -96,21 +117,35 @@ const Backoffice = () => {
             }
         } else {
             if (email && password) {
-                loginCreator(email);
+                const ok = loginCreator(email, password);
+                if (ok) {
+                    setPassword('');
+                }
             }
         }
     };
 
     const handleSaveProfile = () => {
         if (currentCreatorId) {
-            updateCreatorProfile(currentCreatorId, {
+            const updatePayload: Partial<CreatorProfile> = {
                 name: editName,
                 bio: editBio,
                 location: editLocation,
                 imageUrl: editImageUrl,
+                age: editAge,
+                height: editHeight,
+                weight: editWeight,
+                measurements: editMeasurements,
+                hairColor: editHairColor,
+                eyeColor: editEyeColor,
                 services: editServices,
                 aiPersona: editAIPersona
-            });
+            };
+            if (editPassword) {
+                updatePayload.password = editPassword;
+            }
+            updateCreatorProfile(currentCreatorId, updatePayload);
+            setEditPassword('');
             alert('Profile saved successfully!');
         }
     };
@@ -267,6 +302,85 @@ const Backoffice = () => {
                             <div className="form-group">
                                 <label>Location</label>
                                 <input type="text" className="admin-input" value={editLocation} onChange={e => setEditLocation(e.target.value)} />
+                            </div>
+
+                            <hr style={{ borderColor: '#333', margin: '2rem 0' }} />
+                            <h3>Physical Attributes & Details</h3>
+                            <p style={{ color: '#888', fontSize: '0.9rem', marginBottom: '1rem' }}>Display accurate physical details on your public profile to attract verified clients.</p>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+                                <div className="form-group">
+                                    <label>Age</label>
+                                    <input
+                                        type="number"
+                                        className="admin-input"
+                                        placeholder="e.g. 24"
+                                        value={editAge || ''}
+                                        onChange={e => setEditAge(parseInt(e.target.value) || undefined)}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Height (Taille)</label>
+                                    <input
+                                        type="text"
+                                        className="admin-input"
+                                        placeholder="e.g. 172 cm"
+                                        value={editHeight}
+                                        onChange={e => setEditHeight(e.target.value)}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Weight (Poids)</label>
+                                    <input
+                                        type="text"
+                                        className="admin-input"
+                                        placeholder="e.g. 54 kg"
+                                        value={editWeight}
+                                        onChange={e => setEditWeight(e.target.value)}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Measurements (Mensurations)</label>
+                                    <input
+                                        type="text"
+                                        className="admin-input"
+                                        placeholder="e.g. 90-60-90"
+                                        value={editMeasurements}
+                                        onChange={e => setEditMeasurements(e.target.value)}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Hair Color (Cheveux)</label>
+                                    <input
+                                        type="text"
+                                        className="admin-input"
+                                        placeholder="e.g. Brunette / Blonde"
+                                        value={editHairColor}
+                                        onChange={e => setEditHairColor(e.target.value)}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Eye Color (Yeux)</label>
+                                    <input
+                                        type="text"
+                                        className="admin-input"
+                                        placeholder="e.g. Brown / Hazel"
+                                        value={editEyeColor}
+                                        onChange={e => setEditEyeColor(e.target.value)}
+                                    />
+                                </div>
+                            </div>
+
+                            <hr style={{ borderColor: '#333', margin: '2rem 0' }} />
+                            <h3>Account Security</h3>
+                            <div className="form-group" style={{ maxWidth: '400px' }}>
+                                <label>Change Password (leave blank to keep current)</label>
+                                <input
+                                    type="password"
+                                    className="admin-input"
+                                    placeholder="Enter new password..."
+                                    value={editPassword}
+                                    onChange={e => setEditPassword(e.target.value)}
+                                />
                             </div>
 
                             <hr style={{ borderColor: '#333', margin: '2rem 0' }} />
@@ -628,7 +742,9 @@ const Backoffice = () => {
                     <div className="sidebar-footer">
                         <button className="nav-item text-danger" onClick={() => {
                             logoutCreator();
-                            logoutCreator();
+                            setEmail('');
+                            setPassword('');
+                            setIsSidebarOpen(false);
                             navigate('/backoffice');
                         }}>
                             <LogOut size={20} />

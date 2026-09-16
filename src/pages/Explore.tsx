@@ -122,8 +122,11 @@ const Explore = () => {
                                 }
                             } else {
                                 if (email && password) {
-                                    loginClient(email, password);
-                                    setIsLoginModalOpen(false); // Can be kept open if login fails, but store.ts alert handles it for now
+                                    const ok = loginClient(email, password);
+                                    if (ok) {
+                                        setIsLoginModalOpen(false);
+                                        setPassword('');
+                                    }
                                 }
                             }
                         }}>

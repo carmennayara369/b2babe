@@ -45,6 +45,12 @@ export type CreatorProfile = {
     phone: string;
     email: string;
     password?: string;
+    age?: number;
+    height?: string;
+    weight?: string;
+    measurements?: string;
+    hairColor?: string;
+    eyeColor?: string;
     mediaImages: string[];
     premiumMedia?: {
         id: string;
@@ -68,32 +74,39 @@ export type ClientProfile = {
     id: string;
     name: string;
     email: string;
-    password?: string; // Optional for security
-    balance: number; // For payments
-    purchasedMedia: string[]; // IDs of unlocked media
-    subscribedCreators: string[]; // IDs of subscribed creators
+    password?: string;
+    balance: number;
+    purchasedMedia: string[];
+    subscribedCreators: string[];
     status: 'active' | 'suspended';
 };
 
 interface AppState {
-    // Current logged-in states (mock)
+    // Current logged-in states
     currentCreatorId: string | null;
     currentClientId: string | null;
 
+    // Super Admin Authentication
+    isAdminAuthenticated: boolean;
+    adminPassword?: string;
+    loginAdmin: (password: string) => boolean;
+    logoutAdmin: () => void;
+    setAdminPassword: (newPassword: string) => void;
+
     // Data
     creators: CreatorProfile[];
-    pendingCreators: Partial<CreatorProfile>[]; // Array for pending registrations
+    pendingCreators: Partial<CreatorProfile>[];
     clients: ClientProfile[];
     chatSessions: ChatSession[];
 
     // Actions
-    loginCreator: (email: string, password?: string) => void;
+    loginCreator: (email: string, password?: string) => boolean;
     registerCreator: (data: Partial<CreatorProfile>) => void;
     approveCreator: (index: number) => void;
     rejectCreator: (index: number) => void;
     logoutCreator: () => void;
 
-    loginClient: (email: string, password?: string) => void;
+    loginClient: (email: string, password?: string) => boolean;
     registerClient: (data: Partial<ClientProfile>) => void;
     logoutClient: () => void;
     updateClientProfile: (id: string, data: Partial<ClientProfile>) => void;
@@ -122,6 +135,13 @@ const MOCK_CREATORS: CreatorProfile[] = [
         vip: true,
         phone: '12345678',
         email: 'anna@b2babe.com',
+        password: 'b2babe123',
+        age: 25,
+        height: '172 cm',
+        weight: '53 kg',
+        measurements: '90-61-90',
+        hairColor: 'Brunette',
+        eyeColor: 'Hazel',
         mediaImages: [
             'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=400&h=400',
             'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&q=80&w=400&h=400'
@@ -161,6 +181,13 @@ const MOCK_CREATORS: CreatorProfile[] = [
         vip: false,
         phone: '87654321',
         email: 'chloe@b2babe.com',
+        password: 'b2babe123',
+        age: 23,
+        height: '168 cm',
+        weight: '50 kg',
+        measurements: '88-59-89',
+        hairColor: 'Blonde',
+        eyeColor: 'Blue',
         mediaImages: [],
         imageUrl: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&q=80&w=400&h=400',
         services: {
@@ -181,6 +208,13 @@ const MOCK_CREATORS: CreatorProfile[] = [
         vip: false,
         phone: '11223344',
         email: 'lea@b2babe.com',
+        password: 'b2babe123',
+        age: 26,
+        height: '175 cm',
+        weight: '56 kg',
+        measurements: '92-62-92',
+        hairColor: 'Auburn',
+        eyeColor: 'Green',
         mediaImages: [],
         imageUrl: 'https://images.unsplash.com/photo-1524250502761-1ac6f2e30d43?auto=format&fit=crop&q=80&w=400&h=400',
         services: {
@@ -197,6 +231,7 @@ const MOCK_CLIENTS: ClientProfile[] = [
         id: 'client_john@example.com',
         name: 'John Doe',
         email: 'john@example.com',
+        password: 'b2babe123',
         balance: 500,
         purchasedMedia: [],
         subscribedCreators: [],
@@ -225,22 +260,47 @@ export const useAppStore = create<AppState>()(
             currentCreatorId: null,
             currentClientId: 'client-guest', // Allow guests by default, but replaceable with loginClient
 
+            // Super Admin Authentication
+            isAdminAuthenticated: false,
+            adminPassword: 'admin2026',
+            loginAdmin: (password) => {
+                const currentPass = get().adminPassword || 'admin2026';
+                if (password === currentPass) {
+                    set({ isAdminAuthenticated: true });
+                    return true;
+                }
+                alert("Incorrect Super Admin password. Please try again.");
+                return false;
+            },
+            logoutAdmin: () => set({ isAdminAuthenticated: false }),
+            setAdminPassword: (newPassword) => set({ adminPassword: newPassword }),
+
             creators: MOCK_CREATORS,
             pendingCreators: [],
             clients: MOCK_CLIENTS,
             chatSessions: MOCK_CHATS,
 
-            loginCreator: (email) => set((state) => {
-                const creator = (state.creators || []).find(c => c.email === email);
-                if (creator) {
-                    return { currentCreatorId: creator.id };
+            loginCreator: (email, password) => {
+                const state = get();
+                const creator = (state.creators || []).find(c => c.email.trim().toLowerCase() === email.trim().toLowerCase());
+                if (!creator) {
+                    alert("Creator account not found. Please check your email or register.");
+                    return false;
                 }
-                alert("Account not found. Please register first.");
-                return {};
-            }),
+                const expectedPassword = creator.password || 'b2babe123';
+                if (!password || password !== expectedPassword) {
+                    alert("Incorrect password. Please try again.");
+                    return false;
+                }
+                set({ currentCreatorId: creator.id });
+                return true;
+            },
 
             registerCreator: (data) => set((state) => ({
-                pendingCreators: [...(state.pendingCreators || []), data]
+                pendingCreators: [...(state.pendingCreators || []), {
+                    ...data,
+                    password: data.password || 'b2babe123'
+                }]
             })),
 
             approveCreator: (index) => set((state) => {
@@ -259,6 +319,13 @@ export const useAppStore = create<AppState>()(
                     vip: false,
                     phone: creatorToApprove.phone || '',
                     email: creatorToApprove.email || `creator_${Date.now()}@test.com`,
+                    password: creatorToApprove.password || 'b2babe123',
+                    age: creatorToApprove.age || 24,
+                    height: creatorToApprove.height || '170 cm',
+                    weight: creatorToApprove.weight || '54 kg',
+                    measurements: creatorToApprove.measurements || '90-60-90',
+                    hairColor: creatorToApprove.hairColor || 'Brunette',
+                    eyeColor: creatorToApprove.eyeColor || 'Brown',
                     mediaImages: [],
                     imageUrl: creatorToApprove.imageUrl || 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=400&h=400',
                     services: {
@@ -290,20 +357,28 @@ export const useAppStore = create<AppState>()(
 
             logoutCreator: () => set({ currentCreatorId: null }),
 
-            loginClient: (email) => set((state) => {
-                const client = (state.clients || []).find(c => c.email === email);
-                if (client) {
-                    return { currentClientId: client.id };
+            loginClient: (email, password) => {
+                const state = get();
+                const client = (state.clients || []).find(c => c.email.trim().toLowerCase() === email.trim().toLowerCase());
+                if (!client) {
+                    alert("Client account not found. Please register first.");
+                    return false;
                 }
-                alert("Client info not found. Please register first.");
-                return {};
-            }),
+                const expectedPassword = client.password || 'b2babe123';
+                if (!password || password !== expectedPassword) {
+                    alert("Incorrect password. Please try again.");
+                    return false;
+                }
+                set({ currentClientId: client.id });
+                return true;
+            },
 
             registerClient: (data) => set((state) => {
                 const newClient: ClientProfile = {
                     id: `client_${data.email}`,
                     name: data.name || 'New Client',
                     email: data.email || `client_${Date.now()}@test.com`,
+                    password: data.password || 'b2babe123',
                     balance: 0,
                     purchasedMedia: [],
                     subscribedCreators: [],
@@ -503,19 +578,41 @@ export const useAppStore = create<AppState>()(
         }),
         {
             name: 'b2babe-storage',
-            version: 5,
-            migrate: (persistedState: unknown, version: number) => {
+            version: 6,
+            migrate: (persistedState: unknown) => {
                 const state = persistedState as Record<string, unknown>;
-                if (version < 5) {
+                const defaultCreators = MOCK_CREATORS;
+                const existingCreators = (state?.creators as CreatorProfile[]) || defaultCreators;
+
+                const mergedCreators = existingCreators.map(c => {
+                    const mockMatch = defaultCreators.find(m => m.id === c.id || m.email === c.email);
                     return {
-                        ...state,
-                        creators: state.creators || MOCK_CREATORS,
-                        pendingCreators: state.pendingCreators || [],
-                        clients: state.clients || MOCK_CLIENTS,
-                        chatSessions: state.chatSessions || MOCK_CHATS
-                    } as unknown as AppState;
-                }
-                return state as unknown as AppState;
+                        ...c,
+                        password: c.password || mockMatch?.password || 'b2babe123',
+                        age: c.age || mockMatch?.age || 24,
+                        height: c.height || mockMatch?.height || '170 cm',
+                        weight: c.weight || mockMatch?.weight || '54 kg',
+                        measurements: c.measurements || mockMatch?.measurements || '90-60-90',
+                        hairColor: c.hairColor || mockMatch?.hairColor || 'Brunette',
+                        eyeColor: c.eyeColor || mockMatch?.eyeColor || 'Brown',
+                    };
+                });
+
+                const existingClients = (state?.clients as ClientProfile[]) || MOCK_CLIENTS;
+                const mergedClients = existingClients.map(cl => ({
+                    ...cl,
+                    password: cl.password || 'b2babe123'
+                }));
+
+                return {
+                    ...state,
+                    isAdminAuthenticated: false,
+                    adminPassword: (state?.adminPassword as string) || 'admin2026',
+                    creators: mergedCreators,
+                    pendingCreators: (state?.pendingCreators as Partial<CreatorProfile>[]) || [],
+                    clients: mergedClients,
+                    chatSessions: (state?.chatSessions as ChatSession[]) || MOCK_CHATS
+                } as unknown as AppState;
             }
         }
     )

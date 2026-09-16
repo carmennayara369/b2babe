@@ -116,10 +116,13 @@ const Profile = () => {
 
                             <p className="pd-bio">{profile.bio}</p>
 
-                            <div className="pd-stats-row">
-                                <div className="pd-stat-box"><span>Height</span><strong>170cm</strong></div>
-                                <div className="pd-stat-box"><span>Weight</span><strong>55kg</strong></div>
-                                <div className="pd-stat-box"><span>Eyes</span><strong>Brown</strong></div>
+                            <div className="pd-stats-row" style={{ flexWrap: 'wrap', gap: '0.5rem' }}>
+                                <div className="pd-stat-box"><span>Height</span><strong>{profile.height || '170 cm'}</strong></div>
+                                <div className="pd-stat-box"><span>Weight</span><strong>{profile.weight || '54 kg'}</strong></div>
+                                {profile.age && <div className="pd-stat-box"><span>Age</span><strong>{profile.age}</strong></div>}
+                                {profile.measurements && <div className="pd-stat-box"><span>Figure</span><strong>{profile.measurements}</strong></div>}
+                                <div className="pd-stat-box"><span>Eyes</span><strong>{profile.eyeColor || 'Brown'}</strong></div>
+                                {profile.hairColor && <div className="pd-stat-box"><span>Hair</span><strong>{profile.hairColor}</strong></div>}
                             </div>
 
                             {/* Subscription & Action Cards */}
