@@ -136,6 +136,8 @@ interface AppState {
     logoutClient: () => void;
     updateClientProfile: (id: string, data: Partial<ClientProfile>) => void;
     updateCreatorProfile: (id: string, data: Partial<CreatorProfile>) => void;
+    addCreatorProfile: (data: Partial<CreatorProfile>) => CreatorProfile;
+    deleteCreatorProfile: (id: string) => void;
     rechargeWallet: (clientId: string, amount: number) => void;
     subscribeToCreator: (clientId: string, creatorId: string) => void;
 
@@ -423,6 +425,48 @@ export const useAppStore = create<AppState>()(
 
             updateCreatorProfile: (id, data) => set((state) => ({
                 creators: (state.creators || []).map(c => c.id === id ? { ...c, ...data } : c)
+            })),
+
+            addCreatorProfile: (data) => {
+                const newCreator: CreatorProfile = {
+                    id: `c_${Date.now()}`,
+                    name: data.name || 'New Model',
+                    bio: data.bio || 'Welcome to my profile!',
+                    location: data.location || 'Paris, France',
+                    views: 0,
+                    status: data.status || 'active',
+                    aiEnabled: data.aiEnabled ?? true,
+                    vip: false,
+                    phone: data.phone || '',
+                    email: data.email || `model_${Date.now()}@b2babe.com`,
+                    password: data.password || 'b2babe123',
+                    age: data.age || 24,
+                    height: data.height || '170 cm',
+                    weight: data.weight || '54 kg',
+                    measurements: data.measurements || '90-60-90',
+                    hairColor: data.hairColor || 'Brunette',
+                    eyeColor: data.eyeColor || 'Brown',
+                    mediaImages: data.mediaImages || [],
+                    imageUrl: data.imageUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400&h=400',
+                    services: data.services || {
+                        meet: { enabled: false, price: null },
+                        pic: { enabled: true, price: 15 },
+                        video: { enabled: true, price: 50 },
+                        chat: { enabled: true, price: 5 }
+                    },
+                    aiPersona: data.aiPersona || {
+                        basePrompt: `You are ${data.name || 'a creator'} on B2Babe.`,
+                        customInstructions: "Be friendly, charming, and encourage clients to unlock media or chat."
+                    }
+                };
+                set((state) => ({
+                    creators: [...(state.creators || []), newCreator]
+                }));
+                return newCreator;
+            },
+
+            deleteCreatorProfile: (id) => set((state) => ({
+                creators: (state.creators || []).filter(c => c.id !== id)
             })),
 
             rechargeWallet: (clientId, amount) => set((state) => ({

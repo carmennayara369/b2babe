@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import {
     Users, MessageSquare, Bot, LayoutDashboard,
-    Search, Plus, MoreVertical, Edit2, ShieldAlert, Cpu, X, User,
-    LogOut, Lock, ArrowLeft
+    Search, Plus, Edit2, ShieldAlert, Cpu, X, User,
+    LogOut, Lock, ArrowLeft, Trash2
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAppStore, type CreatorProfile, type ClientProfile } from '../store';
@@ -15,6 +15,7 @@ const AdminGlobal = () => {
         creators, pendingCreators, approveCreator, rejectCreator,
         clients, chatSessions, toggleAiForSession, sendMessage,
         updateCreatorProfile, updateClientProfile,
+        addCreatorProfile, deleteCreatorProfile,
         isAdminAuthenticated, loginAdmin, logoutAdmin
     } = useAppStore();
 
@@ -36,6 +37,38 @@ const AdminGlobal = () => {
     const handleEditClick = (profile: CreatorProfile) => {
         setEditingProfile(profile);
         setFormData(JSON.parse(JSON.stringify(profile)));
+    };
+
+    const handleCreateNewClick = () => {
+        const blankProfile: CreatorProfile = {
+            id: 'new',
+            name: '',
+            bio: '',
+            location: '',
+            views: 0,
+            status: 'active',
+            aiEnabled: true,
+            vip: false,
+            phone: '',
+            email: '',
+            password: 'b2babe123',
+            age: 24,
+            height: '170 cm',
+            weight: '54 kg',
+            measurements: '90-60-90',
+            hairColor: 'Brunette',
+            eyeColor: 'Brown',
+            mediaImages: [],
+            imageUrl: '',
+            services: {
+                meet: { enabled: false, price: null },
+                pic: { enabled: true, price: 15 },
+                video: { enabled: true, price: 50 },
+                chat: { enabled: true, price: 5 }
+            }
+        };
+        setEditingProfile(blankProfile);
+        setFormData(blankProfile);
     };
 
     const handleEditClientClick = (client: ClientProfile) => {
@@ -100,13 +133,22 @@ const AdminGlobal = () => {
         if (e) e.preventDefault();
         if (editingProfile) {
             try {
-                updateCreatorProfile(editingProfile.id, formData);
+                if (editingProfile.id === 'new') {
+                    if (!formData.name?.trim()) {
+                        alert("Please enter a name for the new profile.");
+                        return;
+                    }
+                    addCreatorProfile(formData);
+                    alert("New creator profile created successfully!");
+                } else {
+                    updateCreatorProfile(editingProfile.id, formData);
+                    alert("Profile updated successfully!");
+                }
                 setEditingProfile(null);
                 setFormData({});
             } catch (err) {
                 console.error(err);
                 alert("Failed to save changes. The image might still be too large or local storage is full.");
-                // We still try to close
                 setEditingProfile(null);
                 setFormData({});
             }
@@ -183,7 +225,9 @@ const AdminGlobal = () => {
                                 <h1>Profile Management</h1>
                                 <p>Create and edit creator accounts and generic profiles.</p>
                             </div>
-                            <button className="btn-primary flex-center gap-2"><Plus size={18} /> New Profile</button>
+                            <button className="btn-primary flex-center gap-2" onClick={handleCreateNewClick}>
+                                <Plus size={18} /> New Profile
+                            </button>
                         </div>
 
                         <div className="admin-panel">
@@ -224,7 +268,18 @@ const AdminGlobal = () => {
                                                 </td>
                                                 <td>
                                                     <button className="icon-action-btn" title="Edit Profile" onClick={() => handleEditClick(p)}><Edit2 size={16} /></button>
-                                                    <button className="icon-action-btn"><MoreVertical size={16} /></button>
+                                                    <button 
+                                                        className="icon-action-btn" 
+                                                        title="Delete Profile" 
+                                                        onClick={() => {
+                                                            if (window.confirm(`Are you sure you want to delete profile "${p.name}"?`)) {
+                                                                deleteCreatorProfile(p.id);
+                                                            }
+                                                        }}
+                                                        style={{ color: '#ff5252' }}
+                                                    >
+                                                        <Trash2 size={16} />
+                                                    </button>
                                                 </td>
                                             </tr>
                                         ))}
@@ -673,7 +728,9 @@ const AdminGlobal = () => {
                 <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.7)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <div style={{ background: '#1e1e1e', padding: '2rem', borderRadius: '8px', maxWidth: '500px', width: '90%', border: '1px solid #333' }}>
                         <div className="flex-between mb-4" style={{ marginBottom: '1rem' }}>
-                            <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>Edit Profile: {editingProfile.name}</h2>
+                            <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>
+                                {editingProfile.id === 'new' ? 'Create New Profile' : `Edit Profile: ${editingProfile.name}`}
+                            </h2>
                             <button onClick={() => setEditingProfile(null)} style={{ background: 'none', border: 'none', color: '#888', cursor: 'pointer' }}><X size={20} /></button>
                         </div>
                         <div className="custom-scrollbar" style={{ maxHeight: '70vh', overflowY: 'auto', paddingRight: '0.5rem' }}>
@@ -935,7 +992,9 @@ const AdminGlobal = () => {
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1.5rem', borderTop: '1px solid #333', paddingTop: '1.5rem' }}>
                             <button className="btn-secondary" onClick={() => setEditingProfile(null)}>Cancel</button>
-                            <button className="btn-primary" onClick={handleSaveProfile}>Save Changes</button>
+                            <button className="btn-primary" onClick={handleSaveProfile}>
+                                {editingProfile.id === 'new' ? 'Create Profile' : 'Save Changes'}
+                            </button>
                         </div>
                     </div>
                 </div>
