@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Landing from './pages/Landing';
 import Backoffice from './pages/Backoffice';
@@ -5,9 +6,16 @@ import Explore from './pages/Explore';
 import Profile from './pages/Profile';
 import AdminGlobal from './pages/AdminGlobal';
 import ClientProfile from './pages/Client/ClientProfile';
+import { useAppStore } from './store';
 import './index.css';
 
 function App() {
+  const initSync = useAppStore(state => state.initSync);
+
+  useEffect(() => {
+    initSync();
+  }, [initSync]);
+
   return (
     <Router>
       <div className="app-container">

@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
+import { api } from './api';
 
 const safeLocalStorage = {
     getItem: (key: string): string | null => {
@@ -140,6 +141,7 @@ interface AppState {
     deleteCreatorProfile: (id: string) => void;
     rechargeWallet: (clientId: string, amount: number) => void;
     subscribeToCreator: (clientId: string, creatorId: string) => void;
+    initSync: () => Promise<void>;
 
     // Chat Actions
     sendMessage: (sessionId: string, senderId: string, receiverId: string, text: string) => void;
@@ -300,7 +302,10 @@ export const useAppStore = create<AppState>()(
                 return false;
             },
             logoutAdmin: () => set({ isAdminAuthenticated: false }),
-            setAdminPassword: (newPassword) => set({ adminPassword: newPassword }),
+            setAdminPassword: (newPassword) => {
+                set({ adminPassword: newPassword });
+                api.setAdminPassword(newPassword);
+            },
 
             creators: MOCK_CREATORS,
             pendingCreators: [],
@@ -419,17 +424,35 @@ export const useAppStore = create<AppState>()(
 
             logoutClient: () => set({ currentClientId: 'client-guest' }),
 
-            updateClientProfile: (id, data) => set((state) => ({
-                clients: (state.clients || []).map(c => c.id === id ? { ...c, ...data } : c)
-            })),
+            initSync: async () => {
+                const data = await api.getSync();
+                if (data) {
+                    set((state) => ({
+                        creators: data.creators && data.creators.length > 0 ? data.creators : state.creators,
+                        clients: data.clients && data.clients.length > 0 ? data.clients : state.clients,
+                        chatSessions: data.chatSessions && data.chatSessions.length > 0 ? data.chatSessions : state.chatSessions,
+                        adminPassword: data.adminPassword || state.adminPassword
+                    }));
+                }
+            },
 
-            updateCreatorProfile: (id, data) => set((state) => ({
-                creators: (state.creators || []).map(c => c.id === id ? { ...c, ...data } : c)
-            })),
+            updateClientProfile: (id, data) => {
+                set((state) => ({
+                    clients: (state.clients || []).map(c => c.id === id ? { ...c, ...data } : c)
+                }));
+                api.updateClient(id, data);
+            },
+
+            updateCreatorProfile: (id, data) => {
+                set((state) => ({
+                    creators: (state.creators || []).map(c => c.id === id ? { ...c, ...data } : c)
+                }));
+                api.updateCreator(id, data);
+            },
 
             addCreatorProfile: (data) => {
                 const newCreator: CreatorProfile = {
-                    id: `c_${Date.now()}`,
+                    id: data.id || `c_${Date.now()}`,
                     name: data.name || 'New Model',
                     bio: data.bio || 'Welcome to my profile!',
                     location: data.location || 'Paris, France',
@@ -462,12 +485,16 @@ export const useAppStore = create<AppState>()(
                 set((state) => ({
                     creators: [...(state.creators || []), newCreator]
                 }));
+                api.createCreator(newCreator);
                 return newCreator;
             },
 
-            deleteCreatorProfile: (id) => set((state) => ({
-                creators: (state.creators || []).filter(c => c.id !== id)
-            })),
+            deleteCreatorProfile: (id) => {
+                set((state) => ({
+                    creators: (state.creators || []).filter(c => c.id !== id)
+                }));
+                api.deleteCreator(id);
+            },
 
             rechargeWallet: (clientId, amount) => set((state) => ({
                 clients: (state.clients || []).map(c => c.id === clientId ? {

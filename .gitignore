@@ -28,3 +28,8 @@ dist-ssr
 ._*
 .Spotlight-V100
 .Trashes
+
+# Database
+server/data/*.db
+server/data/*.db-wal
+server/data/*.db-shm
